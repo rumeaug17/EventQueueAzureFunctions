@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\net461\AgdfEventQueueFunctionApp.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>    
+    <PackageReference Include="Microsoft.Azure.KeyVault" Version="2.3.2" />    
+    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.1.0-preview" />    
+    <PackageReference Include="Microsoft.Azure.WebJobs" Version="2.2.0" />    
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions" Version="2.2.0" />    
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DocumentDB" Version="1.2.0" />    
+    <PackageReference Include="Microsoft.Azure.WebJobs.ServiceBus" Version="2.2.0" />    
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.13" />    
+    <PackageReference Include="MongoDB.Driver" Version="2.5.1" />    
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />    
+    <PackageReference Include="Nito.AsyncEx" Version="4.0.1" />    
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.1.8" />    
+    <PackageReference Include="WindowsAzure.Storage" Version="7.2.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Net.Http.WebRequest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="host.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+</Project>
