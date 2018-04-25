@@ -1,14 +1,13 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.ServiceBus.Messaging;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 using System;
-using System.Threading.Tasks;
-
-using MongoDB.Driver;
 using System.Security.Authentication;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson;
+using System.Threading.Tasks;
 
 namespace AgdfEventQueueFunctionApp
 {
@@ -16,7 +15,6 @@ namespace AgdfEventQueueFunctionApp
     {
         public static readonly string SubscriptionName = "AgdfAzureExport.WorkItemEventBase.Subs";
         public static readonly string TopicName = "workitemeventbase";
-
 
         public SubscriptionLoader()
         {
@@ -38,7 +36,7 @@ namespace AgdfEventQueueFunctionApp
         {
             var connectionString = System.Environment.GetEnvironmentVariable("MONGODB_CONNEXION", EnvironmentVariableTarget.Process);
             MongoClientSettings settings = MongoClientSettings.FromUrl(new MongoUrl(connectionString));
-            settings.SslSettings =  new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
+            settings.SslSettings = new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
             var mongoClient = new MongoClient(settings);
 
             var dbName = "agdf-event-store";
@@ -47,7 +45,8 @@ namespace AgdfEventQueueFunctionApp
             var database = mongoClient.GetDatabase(dbName);
 
             var collection = database.GetCollection<BsonDocument>(collectionName);
-            if (collection == null) {
+            if (collection == null)
+            {
                 // todo better do do this with write concern
                 log.Info($"creating collection: {collectionName}");
                 await database.CreateCollectionAsync(collectionName);
@@ -65,7 +64,7 @@ namespace AgdfEventQueueFunctionApp
             var l = res.ToList();
             if (l.Count <= 0)
             {
-                // other idea; make a hash of data without id and if we have the same, ignore the insert 
+                // other idea; make a hash of data without id and if we have the same, ignore the insert
                 log.Info($"data to insert in the event store: \n{json}");
                 await collection.InsertOneAsync(document);
             }

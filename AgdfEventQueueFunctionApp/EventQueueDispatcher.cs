@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AgdfEventQueueFunctionApp
 {
-    class EventQueueDispatcher
+    internal class EventQueueDispatcher
     {
         private readonly Uri serviceBusUri;
 

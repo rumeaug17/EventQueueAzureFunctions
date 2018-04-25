@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.ServiceBus.Messaging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AgdfEventQueueFunctionApp.TechnicalTriggers
 {
@@ -20,7 +20,7 @@ namespace AgdfEventQueueFunctionApp.TechnicalTriggers
 
             var serviceBusUri = new Uri("sb://agdftestservicebus.servicebus.windows.net");
             var serviceBus = new ServiceBusService(serviceBusUri, log);
-            var deadqueueClient = serviceBus.GetQueueClient("global.dead.letter.queue") ;
+            var deadqueueClient = serviceBus.GetQueueClient("global.dead.letter.queue");
 
             var len = serviceBus.GetQueueLength("global.dead.letter.queue");
             log.Info($"queue length : {len}");
@@ -40,7 +40,6 @@ namespace AgdfEventQueueFunctionApp.TechnicalTriggers
 
             log.Info($"finish, it's time to weekend");
             await deadqueueClient?.CloseAsync();
-
         }
     }
 }

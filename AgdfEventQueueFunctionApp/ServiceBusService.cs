@@ -1,17 +1,17 @@
-﻿using System;
+﻿using Microsoft.Azure.WebJobs.Host;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
-using Microsoft.Azure.WebJobs.Host;
+using System;
 using System.Threading.Tasks;
 
 namespace AgdfEventQueueFunctionApp
 {
     public class ServiceBusService
     {
-        private TokenProvider tokenProvider;
-        private NamespaceManager namespaceClient;
         private TraceWriter log;
+        private NamespaceManager namespaceClient;
         private Uri serviceBusUri;
+        private TokenProvider tokenProvider;
 
         public ServiceBusService(Uri serviceBusUri, TraceWriter log)
         {
@@ -22,15 +22,6 @@ namespace AgdfEventQueueFunctionApp
             this.tokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(sasKeyName, sasKeyValue);
             this.namespaceClient = new NamespaceManager(serviceBusUri, this.tokenProvider);
             this.log = log;
-        }
-
-        public async Task CreateTopicIfNotExist(string topicName)
-        {
-            if (!namespaceClient.TopicExists(topicName))
-            {
-                log?.Info($"creating topic {topicName}");
-                await namespaceClient.CreateTopicAsync(topicName);
-            }
         }
 
         public async Task CreateSubscriptionIfNotExist(string topicName, string subscriptionName, string filter, bool withGlobalDeadQueue = true)
@@ -52,12 +43,14 @@ namespace AgdfEventQueueFunctionApp
             }
         }
 
-        public TopicClient GetTopicClient(string topicName)
+        public async Task CreateTopicIfNotExist(string topicName)
         {
-            var factory = MessagingFactory.Create(serviceBusUri, tokenProvider);
-            return factory.CreateTopicClient(topicName);
+            if (!namespaceClient.TopicExists(topicName))
+            {
+                log?.Info($"creating topic {topicName}");
+                await namespaceClient.CreateTopicAsync(topicName);
+            }
         }
-
         public QueueClient GetQueueClient(string queueName)
         {
             var factory = MessagingFactory.Create(serviceBusUri, tokenProvider);
@@ -67,8 +60,12 @@ namespace AgdfEventQueueFunctionApp
         public long? GetQueueLength(string queueName)
         {
             return namespaceClient.GetQueue(queueName)?.MessageCountDetails.ActiveMessageCount;
-
         }
 
+        public TopicClient GetTopicClient(string topicName)
+        {
+            var factory = MessagingFactory.Create(serviceBusUri, tokenProvider);
+            return factory.CreateTopicClient(topicName);
+        }
     }
 }

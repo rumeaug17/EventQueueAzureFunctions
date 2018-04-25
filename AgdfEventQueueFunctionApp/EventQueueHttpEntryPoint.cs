@@ -1,15 +1,12 @@
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.WebJobs.Host;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
-using Microsoft.ServiceBus.Messaging;
-
-using System.Collections.Generic;
-using System;
 
 namespace AgdfEventQueueFunctionApp.TechnicalTriggers
 {
@@ -19,7 +16,7 @@ namespace AgdfEventQueueFunctionApp.TechnicalTriggers
 
         [FunctionName("EventQueueHttpEntryPoint")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,            
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
             TraceWriter log)
         {
             // check private access token

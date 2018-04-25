@@ -12,7 +12,7 @@ namespace AgdfEventQueueFunctionApp.Subscriptions
 
         [FunctionName("AgdfApiExportWorkItemEventTrigger")]
         public static async Task Run(
-            [ServiceBusTrigger("workitemeventbase", "AgdfApiExport.WorkItemEventBase.Subs", AccessRights.Manage, Connection = "agdftestservicebus_RootManageSharedAccessKey_SERVICEBUS")]BrokeredMessage message, 
+            [ServiceBusTrigger("workitemeventbase", "AgdfApiExport.WorkItemEventBase.Subs", AccessRights.Manage, Connection = "agdftestservicebus_RootManageSharedAccessKey_SERVICEBUS")]BrokeredMessage message,
             TraceWriter log)
         {
             await webHook.Post(message, log);

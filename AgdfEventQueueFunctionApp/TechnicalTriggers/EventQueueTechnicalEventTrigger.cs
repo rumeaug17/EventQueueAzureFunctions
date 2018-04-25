@@ -11,7 +11,7 @@ namespace AgdfEventQueueFunctionApp
     {
         [FunctionName("EventQueueTechnicalEventTrigger")]
         public static async Task Run(
-            [ServiceBusTrigger("servicebuscommandevent", "ServiceBusCommandEvent.Subscription", AccessRights.Manage, Connection = "agdftestservicebus_RootManageSharedAccessKey_SERVICEBUS")] BrokeredMessage mySbMsg, 
+            [ServiceBusTrigger("servicebuscommandevent", "ServiceBusCommandEvent.Subscription", AccessRights.Manage, Connection = "agdftestservicebus_RootManageSharedAccessKey_SERVICEBUS")] BrokeredMessage mySbMsg,
             TraceWriter log)
         {
             var body = mySbMsg.GetBody<string>();
@@ -25,7 +25,7 @@ namespace AgdfEventQueueFunctionApp
             string eventType = data?.Data?.EventType;
             int order = data?.Data?.Order;
 
-            // TODO check data 
+            // TODO check data
             log.Info($"*** subscriptionName:{subscriptionName} *** eventType:{eventType} *** order:{order} ***");
 
             var serviceBusUri = new Uri("sb://agdftestservicebus.servicebus.windows.net");

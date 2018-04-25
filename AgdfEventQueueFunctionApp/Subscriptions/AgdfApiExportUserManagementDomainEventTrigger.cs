@@ -12,7 +12,7 @@ namespace AgdfEventQueueFunctionApp.Subscriptions
 
         [FunctionName("AgdfApiExportUserManagementDomainEventTrigger")]
         public static async Task Run(
-            [ServiceBusTrigger("usermanagmentdomainevent", "AgdfApiExport.UserManagmentDomainEvent.Subs", AccessRights.Manage, Connection = "agdftestservicebus_RootManageSharedAccessKey_SERVICEBUS")]BrokeredMessage message, 
+            [ServiceBusTrigger("usermanagmentdomainevent", "AgdfApiExport.UserManagmentDomainEvent.Subs", AccessRights.Manage, Connection = "agdftestservicebus_RootManageSharedAccessKey_SERVICEBUS")]BrokeredMessage message,
             TraceWriter log)
         {
             await webHook.Post(message, log);
