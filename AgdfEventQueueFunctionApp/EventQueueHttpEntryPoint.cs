@@ -34,7 +34,10 @@ namespace AgdfEventQueueFunctionApp.TechnicalTriggers
             {
                 return req.CreateResponse(HttpStatusCode.BadRequest, "custom-id not found in request headers");
             }
-            if (auth != "xkTCFRCS9bQlwudgNDmsqblLMqlBjWKe7pPSiAwzR/s=")
+
+            var authSecret = System.Environment.GetEnvironmentVariable("CUSTOM_ID", EnvironmentVariableTarget.Process);
+
+            if (auth != authSecret)
             {
                 return req.CreateResponse(HttpStatusCode.Forbidden, "connection refused");
             }

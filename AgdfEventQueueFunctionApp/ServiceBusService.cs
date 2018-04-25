@@ -13,12 +13,12 @@ namespace AgdfEventQueueFunctionApp
         private TraceWriter log;
         private Uri serviceBusUri;
 
-        private const string sasKeyName = "RootManageSharedAccessKey";
-        private const string sasKeyValue = "pmYmlLgcZE2aixJ46wCqK4G/gJWX5zue0KsoSkzKXPM=";
-
         public ServiceBusService(Uri serviceBusUri, TraceWriter log)
         {
             this.serviceBusUri = serviceBusUri;
+            var sasKeyName = System.Environment.GetEnvironmentVariable("SERVICEBUS_sasKeyName", EnvironmentVariableTarget.Process);
+            var sasKeyValue = System.Environment.GetEnvironmentVariable("SERVICEBUS_sasKeyValue", EnvironmentVariableTarget.Process);
+
             this.tokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(sasKeyName, sasKeyValue);
             this.namespaceClient = new NamespaceManager(serviceBusUri, this.tokenProvider);
             this.log = log;

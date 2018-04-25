@@ -18,31 +18,40 @@ namespace AgdfEventQueueFunctionApp
     {
         private Uri baseAddress;
         private string path;
-
+        private readonly string basicUser;
+        private readonly string basicPasswd;
         private readonly AsyncLazy<HttpClient> lazyClient;
+        private readonly AsyncLazy<X509Certificate> lazyCertificate;
 
         private string AuthToken(string user, string passwd) => Convert.ToBase64String(
             Encoding.Default.GetBytes(s: $"{user}:{passwd}"));
 
-        private KeyValuePair<string, string>[] Headers
+        private List<KeyValuePair<string, string>> Headers
         {
             get
             {
-                var user = "";
-                var passwd = "";
-                return new[] {
+                var headers = new List<KeyValuePair<string, string>> {
                     new KeyValuePair<string, string>("Accept", "application/json"),
-                    new KeyValuePair<string, string>("Authorization", value:$"Basic {AuthToken(user, passwd)}"),
                 };
+
+                if (basicUser != null && basicPasswd != null)
+                {
+                    headers.Add(new KeyValuePair<string, string>("Authorization", value: $"Basic {AuthToken(basicUser, basicPasswd)}"));
+                }
+
+                return headers;
             }
         }
 
         private static TimeSpan DefaultTimeout => new TimeSpan(10 * 1000);
 
-        public DefaultHttpWebHook(Uri baseAddress, string path)
+        public DefaultHttpWebHook(Uri baseAddress, string path, string basicUser = null, string basicPasswd = null, bool withMutualTls = false)
         {
             this.baseAddress = baseAddress;
             this.path = path;
+            this.basicUser = basicUser;
+            this.basicPasswd = basicPasswd;
+            lazyCertificate = new AsyncLazy<X509Certificate>(async () => await GetCertificate(withMutualTls));
             lazyClient = new AsyncLazy<HttpClient>(async () => await GetHttpClient());
         }
 
@@ -61,13 +70,14 @@ namespace AgdfEventQueueFunctionApp
         private async Task<HttpClient> GetHttpClient()
         {
             var handler = new WebRequestHandler();
-            var certClient = await GetCertificate("", "");
+            var certClient = await lazyCertificate;
 
             if (certClient != null)
             {
                 handler.ClientCertificates.Add(certClient);
+                handler.AuthenticationLevel = AuthenticationLevel.MutualAuthRequired;
+                handler.ServerCertificateValidationCallback = ValidateServerCertificate;
             }
-            handler.ServerCertificateValidationCallback = ValidateServerCertificate;
 
             var client = new HttpClient(handler) { BaseAddress = baseAddress };
 
@@ -81,7 +91,6 @@ namespace AgdfEventQueueFunctionApp
 
         private static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-            // TODO
             if (sslPolicyErrors == SslPolicyErrors.None)
             {
                 return true;
@@ -91,18 +100,22 @@ namespace AgdfEventQueueFunctionApp
             return false;
         }
 
-        private static async Task<X509Certificate> GetCertificate(string secret, string keyVaultUri)
+        private static async Task<X509Certificate2> GetCertificate(bool withMutualTls)
         {
-            var serviceTokenProvider = new AzureServiceTokenProvider();
-            var keyVaultClient = new KeyVaultClient(
-                new KeyVaultClient.AuthenticationCallback(serviceTokenProvider.KeyVaultTokenCallback)
-            );
-            var secretUri = $"${keyVaultUri}/Secrets/{secret}";
+            if (withMutualTls)
+            {
+                var serviceTokenProvider = new AzureServiceTokenProvider();
+                var keyVaultClient = new KeyVaultClient(
+                    new KeyVaultClient.AuthenticationCallback(serviceTokenProvider.KeyVaultTokenCallback)
+                );
 
-            var secretValue = await keyVaultClient.GetSecretAsync(secretUri);
+                var keyVaultUri = System.Environment.GetEnvironmentVariable("KEYVAULT_Url", EnvironmentVariableTarget.Process);
 
-            //return secretValue.Value;
+                var secretValue = await keyVaultClient.GetCertificateAsync(keyVaultUri, "default-dummy-certificate");
+                return new X509Certificate2(secretValue.Cer);
+            }
             return null;
+
         }
     }
 }

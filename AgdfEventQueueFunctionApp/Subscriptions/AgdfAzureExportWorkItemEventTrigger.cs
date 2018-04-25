@@ -36,7 +36,7 @@ namespace AgdfEventQueueFunctionApp
             [ServiceBusTrigger("workitemeventbase", "AgdfAzureExport.WorkItemEventBase.Subs", AccessRights.Manage, Connection = "agdftestservicebus_RootManageSharedAccessKey_SERVICEBUS")]BrokeredMessage message,
             TraceWriter log)
         {
-            var connectionString = "mongodb://agdf-event-store:Ss1eBSWgLZVg6n2hKxSIRyVQ60SLmGx1aUO5s5aCClqH6jQfmlZTzq4C1ukM2RvwTo7L9zCfLaCRsXMNIHQeNw==@agdf-event-store.documents.azure.com:10255/?ssl=true&replicaSet=globaldb";
+            var connectionString = System.Environment.GetEnvironmentVariable("MONGODB_CONNEXION", EnvironmentVariableTarget.Process);
             MongoClientSettings settings = MongoClientSettings.FromUrl(new MongoUrl(connectionString));
             settings.SslSettings =  new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
             var mongoClient = new MongoClient(settings);
@@ -59,8 +59,6 @@ namespace AgdfEventQueueFunctionApp
             var data = new { _id = messageData?.Id, messageData?.Subject, WorkItemDocument = messageData?.Data };
             var json = JsonConvert.SerializeObject(data);
 
-            log.Info($"data to insert in the event store : {json}");
-
             var document = BsonSerializer.Deserialize<BsonDocument>(json);
 
             var res = await collection.FindAsync($"{{ _id:\"{data?._id}\" }}");
@@ -68,11 +66,12 @@ namespace AgdfEventQueueFunctionApp
             if (l.Count <= 0)
             {
                 // other idea; make a hash of data without id and if we have the same, ignore the insert 
+                log.Info($"data to insert in the event store: \n{json}");
                 await collection.InsertOneAsync(document);
             }
             else
             {
-                log.Info($"data already in the event store : {l[0]}");
+                log.Info($"data already in the event store: {data?._id}");
             }
         }
     }
