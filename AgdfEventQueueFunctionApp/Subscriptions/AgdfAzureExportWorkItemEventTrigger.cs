@@ -36,7 +36,6 @@ namespace AgdfEventQueueFunctionApp
             var collectionName = "WorkItemEvents";
             var collection = await helper.GetCollection(collectionName);
             await helper.InsertDocumentIfNew(collection, message);
-        
         }
     }
 }
