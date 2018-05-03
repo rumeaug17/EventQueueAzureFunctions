@@ -51,6 +51,7 @@ namespace AgdfEventQueueFunctionApp
                 await namespaceClient.CreateTopicAsync(topicName);
             }
         }
+
         public QueueClient GetQueueClient(string queueName)
         {
             var factory = MessagingFactory.Create(serviceBusUri, tokenProvider);
