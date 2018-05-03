@@ -22,7 +22,6 @@ namespace AgdfEventQueueFunctionApp
         //the method that will be provided to the KeyVaultClient
         public async Task<string> GetToken(string authority, string resource, string scope)
         {
-
             var authContext = new AuthenticationContext(authority);
             ClientCredential clientCred = new ClientCredential(this.clientId, this.clientSecret);
             AuthenticationResult result = await authContext.AcquireTokenAsync(resource, clientCred);
@@ -31,9 +30,8 @@ namespace AgdfEventQueueFunctionApp
                 throw new InvalidOperationException("Failed to obtain the JWT token");
 
             return result.AccessToken;
-
-
         }
+
         public async Task<CertificateBundle> getCertificate(string certificateUri)
         {
             KeyVaultClient kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));

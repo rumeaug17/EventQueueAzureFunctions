@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AgdfEventQueueFunctionApp
 {
-    class CosmosDbHelper
+    internal class CosmosDbHelper
     {
         private readonly IMongoDatabase database;
         private readonly TraceWriter log;

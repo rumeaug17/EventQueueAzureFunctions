@@ -83,6 +83,7 @@ namespace AgdfEventQueueFunctionApp
 
         private string AuthToken(string user, string passwd) => Convert.ToBase64String(
                                                             Encoding.Default.GetBytes(s: $"{user}:{passwd}"));
+
         private async Task<HttpClient> GetHttpClient()
         {
             var handler = new WebRequestHandler();
