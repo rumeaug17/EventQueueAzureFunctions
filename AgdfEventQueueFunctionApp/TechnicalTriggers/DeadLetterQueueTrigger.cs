@@ -25,7 +25,7 @@ namespace AgdfEventQueueFunctionApp.TechnicalTriggers
             var len = serviceBus.GetQueueLength("global.dead.letter.queue");
             log.Info($"queue length : {len}");
             if (len > 0)
-            {
+            {                
                 var messages = await deadqueueClient?.ReceiveBatchAsync(Max_Messages);
                 var batch = new List<BrokeredMessage>(messages);
                 log.Info($"batch length : {batch.Count}");

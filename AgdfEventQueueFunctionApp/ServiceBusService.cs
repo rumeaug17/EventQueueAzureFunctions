@@ -52,6 +52,18 @@ namespace AgdfEventQueueFunctionApp
             }
         }
 
+        public async Task CreateDeadQueueIfNotExist(string queueName)
+        {
+            if (!namespaceClient.QueueExists(queueName))
+            {
+                log?.Info($"creating queue {queueName}");
+                var queueDesc = await namespaceClient.CreateQueueAsync(queueName);
+                queueDesc.EnableBatchedOperations = true;
+                queueDesc.SupportOrdering = true;
+                await namespaceClient.UpdateQueueAsync(queueDesc);
+            }
+        }
+
         public QueueClient GetQueueClient(string queueName)
         {
             var factory = MessagingFactory.Create(serviceBusUri, tokenProvider);

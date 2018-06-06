@@ -21,7 +21,6 @@ namespace AgdfEventQueueFunctionApp
 
     public static class AgdfAzureExportWorkItemEventTrigger
     {
-        // Todo create subscription by code at startup with a static object loader ?
         private static SubscriptionLoader loader = new SubscriptionLoader();
 
         [FunctionName("AgdfAzureExportWorkItemEventTrigger")]

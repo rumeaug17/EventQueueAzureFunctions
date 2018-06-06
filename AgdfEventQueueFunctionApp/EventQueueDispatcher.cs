@@ -6,13 +6,37 @@ using System.Threading.Tasks;
 
 namespace AgdfEventQueueFunctionApp
 {
+    internal class EventQueueSubscriptionLoader
+    {
+        public static readonly string SubscriptionName = "ServiceBusCommandEvent.Subscription";
+        public static readonly string TopicName = "servicebuscommandevent";
+
+        public EventQueueSubscriptionLoader(Uri serviceBusUri)
+        {
+            var serviceBus = new ServiceBusService(serviceBusUri, null);
+
+            var createTopic = serviceBus.CreateTopicIfNotExist(TopicName);
+            var createSubs = serviceBus.CreateSubscriptionIfNotExist(TopicName, SubscriptionName, null);
+            var createDeadqueue = serviceBus.CreateDeadQueueIfNotExist("global.dead.letter.queue");
+
+            Task.WhenAll(createTopic, createSubs).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+    }
+
     internal class EventQueueDispatcher
     {
         private readonly Uri serviceBusUri;
 
+
         public EventQueueDispatcher(Uri serviceBusUri)
         {
+            var loader = new EventQueueSubscriptionLoader(serviceBusUri);
+
             this.serviceBusUri = serviceBusUri;
+            // at startup create ServiceBusCommandEvent.Subscription and servicebuscommandevent  (and global.dead.letter.queue) ?
+
+            var serviceBus = new ServiceBusService(this.serviceBusUri, null);
+
         }
 
         public async Task Dispatch(BrokeredMessage message)

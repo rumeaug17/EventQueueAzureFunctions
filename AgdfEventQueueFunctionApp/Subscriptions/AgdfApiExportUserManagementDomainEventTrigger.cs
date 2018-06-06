@@ -8,11 +8,11 @@ namespace AgdfEventQueueFunctionApp.Subscriptions
 {
     public static class AgdfApiExportUserManagementDomainEventTrigger
     {
-        private static DefaultHttpWebHook webHook = new DefaultHttpWebHook(new Uri("https://localhost/Agdf.Api.Export"), "/event/userManagmentDomain");
+        private static DefaultHttpWebHook webHook = new DefaultHttpWebHook(new Uri("https://localhost/Agdf.Api.Export"), "/event/userManagementDomain");
 
         [FunctionName("AgdfApiExportUserManagementDomainEventTrigger")]
         public static async Task Run(
-            [ServiceBusTrigger("usermanagmentdomainevent", "AgdfApiExport.UserManagmentDomainEvent.Subs", AccessRights.Manage, Connection = "agdftestservicebus_RootManageSharedAccessKey_SERVICEBUS")]BrokeredMessage message,
+            [ServiceBusTrigger("usermanagementdomainevent", "AgdfApiExport.UserManagementDomainEvent.Subs", AccessRights.Manage, Connection = "agdftestservicebus_RootManageSharedAccessKey_SERVICEBUS")]BrokeredMessage message,
             TraceWriter log)
         {
             await webHook.Post(message, log);

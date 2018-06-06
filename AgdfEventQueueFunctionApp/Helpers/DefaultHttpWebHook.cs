@@ -16,7 +16,7 @@ namespace AgdfEventQueueFunctionApp
     {
         private readonly string basicPasswd;
         private readonly string basicUser;
-        private readonly AsyncLazy<X509Certificate> lazyCertificate;
+        private readonly AsyncLazy<X509Certificate2> lazyCertificate;
         private readonly AsyncLazy<HttpClient> lazyClient;
         private Uri baseAddress;
         private string path;
@@ -27,7 +27,7 @@ namespace AgdfEventQueueFunctionApp
             this.path = path;
             this.basicUser = basicUser;
             this.basicPasswd = basicPasswd;
-            lazyCertificate = new AsyncLazy<X509Certificate>(async () => await GetCertificate(withMutualTls));
+            lazyCertificate = new AsyncLazy<X509Certificate2>(async () => await GetCertificate(withMutualTls));
             lazyClient = new AsyncLazy<HttpClient>(async () => await GetHttpClient());
         }
 

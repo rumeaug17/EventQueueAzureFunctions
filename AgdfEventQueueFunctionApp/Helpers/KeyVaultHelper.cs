@@ -19,7 +19,6 @@ namespace AgdfEventQueueFunctionApp
             this.clientSecret = clientSecret;
         }
 
-        //the method that will be provided to the KeyVaultClient
         public async Task<string> GetToken(string authority, string resource, string scope)
         {
             var authContext = new AuthenticationContext(authority);
@@ -54,7 +53,9 @@ namespace AgdfEventQueueFunctionApp
         {
             try
             {
-                return new X509Certificate2(pfxBytes, string.Empty);
+                return new X509Certificate2(pfxBytes, 
+                    string.Empty, 
+                    X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
             }
             catch
             {

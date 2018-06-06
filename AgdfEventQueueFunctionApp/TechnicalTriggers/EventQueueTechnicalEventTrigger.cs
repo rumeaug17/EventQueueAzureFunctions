@@ -6,7 +6,7 @@ using System;
 using System.Threading.Tasks;
 
 namespace AgdfEventQueueFunctionApp
-{
+{    
     public static class EventQueueTechnicalEventTrigger
     {
         [FunctionName("EventQueueTechnicalEventTrigger")]
